@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Lost &amp; Found</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f7fc;
+            font-family: Arial, sans-serif;
+            color: #263449;
+        }
+
+        .sidebar {
+            width: 245px;
+            min-height: 100vh;
+            background: #163b70;
+            position: fixed;
+            padding: 28px 18px;
+            color: white;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .menu-link {
+            display: block;
+            color: #dce8f8;
+            text-decoration: none;
+            padding: 13px 15px;
+            border-radius: 9px;
+            margin-bottom: 9px;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: #2d5d9c;
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 245px;
+            padding: 35px;
+        }
+
+        .stat-card, .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 23px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.04);
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #245b9e;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #245b9e;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #174477;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">Lost &amp; Found</div>
+
+    <a href="/" class="menu-link active">Dashboard</a>
+    <a href="#form-barang" class="menu-link">Tambah Barang</a>
+    <a href="/data-barang" class="menu-link">Data Barang</a>
+</div>
+
+<!-- KONTEN UTAMA -->
+<div class="main-content">
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Dashboard</h2>
+        <p class="text-secondary">
+            Sistem pengelolaan barang hilang dan ditemukan.
+        </p>
+    </div>
+
+    <!-- STATISTIK -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-label">Total Barang</div>
+                <div class="stat-number" th:text="${totalBarang}">0</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-label">Barang Hilang</div>
+                <div class="stat-number text-danger"
+                     th:text="${jumlahHilang}">0</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-label">Barang Ditemukan</div>
+                <div class="stat-number text-success"
+                     th:text="${jumlahDitemukan}">0</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-label">Laporan Hari Ini</div>
+                <div class="stat-number"
+                     th:text="${laporanHariIni}">0</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FORM BARANG -->
+    <div class="content-card" id="form-barang">
+
+        <div class="mb-4">
+            <h4 class="fw-bold"
+                th:text="${modeEdit} ? 'Edit Barang' : 'Tambah Laporan Barang'">
+                Tambah Laporan Barang
+            </h4>
+
+            <p class="text-secondary small mb-0">
+                Lengkapi informasi barang dan metode pengembaliannya.
+            </p>
+        </div>
+
+        <form th:action="@{/simpan}"
+              th:object="${barangBaru}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">Nama Barang</label>
+                    <input type="text"
+                           th:field="*{namaBarang}"
+                           class="form-control"
+                           placeholder="Contoh: Dompet hitam"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Lokasi Barang</label>
+                    <input type="text"
+                           th:field="*{lokasi}"
+                           class="form-control"
+                           placeholder="Contoh: Gedung A"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Tanggal Laporan</label>
+                    <input type="date"
+                           th:field="*{tanggal}"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Status Barang</label>
+                    <select th:field="*{status}"
+                            class="form-select"
+                            required>
+                        <option value="HILANG">Hilang</option>
+                        <option value="DITEMUKAN">Ditemukan</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Deskripsi Barang</label>
+                    <textarea th:field="*{deskripsi}"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Tuliskan ciri-ciri barang..."></textarea>
+                </div>
+
+                <div class="col-12">
+                    <hr>
+                    <h5 class="fw-bold">Informasi Pengambilan Barang</h5>
+                    <p class="text-secondary small">
+                        Pilih cara pemilik menerima barang yang ditemukan.
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Metode Pengambilan</label>
+                    <select th:field="*{metodePengambilan}"
+                            class="form-select"
+                            id="metodePengambilan">
+                        <option value="">-- Pilih Metode --</option>
+                        <option value="AMBIL_SENDIRI">Ambil Sendiri</option>
+                        <option value="JASA_ANTAR">Jasa Antar</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Nama Penerima</label>
+                    <input type="text"
+                           th:field="*{namaPenerima}"
+                           class="form-control"
+                           placeholder="Nama pemilik barang">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Nomor Telepon</label>
+                    <input type="text"
+                           th:field="*{nomorTelepon}"
+                           class="form-control"
+                           placeholder="Nomor telepon penerima">
+                </div>
+
+                <!-- KHUSUS JASA ANTAR -->
+                <div class="col-12" id="bagianAlamat" style="display:none;">
+                    <label class="form-label">Alamat Pengantaran</label>
+                    <textarea th:field="*{alamatPengantaran}"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Masukkan alamat lengkap penerima..."></textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Status Pengambilan / Pengantaran</label>
+                    <select th:field="*{statusPengantaran}"
+                            class="form-select">
+                        <option value="">-- Pilih Status --</option>
+                        <option value="MENUNGGU">Menunggu Pengambilan</option>
+                        <option value="SEDANG DIKIRIM">Sedang Dikirim</option>
+                        <option value="SELESAI">Selesai</option>
+                    </select>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <span th:text="${modeEdit} ? 'Simpan Perubahan' : 'Simpan Barang'">
+                            Simpan Barang
+                        </span>
+                    </button>
+
+                    <a href="/" class="btn btn-light border px-4">
+                        Reset
+                    </a>
+
+                    <a href="/data-barang"
+                       class="btn btn-light border px-4">
+                        Lihat Data Barang
+                    </a>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    const metode = document.getElementById("metodePengambilan");
+    const bagianAlamat = document.getElementById("bagianAlamat");
+
+    function aturMetodePengambilan() {
+        if (metode.value === "JASA_ANTAR") {
+            bagianAlamat.style.display = "block";
+        } else {
+            bagianAlamat.style.display = "none";
+        }
+    }
+
+    metode.addEventListener("change", aturMetodePengambilan);
+
+    document.addEventListener("DOMContentLoaded", aturMetodePengambilan);
+    aturMetodePengambilan();
+</script>
+
+</body>
+</html>
